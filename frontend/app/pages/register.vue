@@ -25,17 +25,9 @@ const username = ref("")
 const password = ref("")
 
 const config = useRuntimeConfig()
+const authStore = useAuthStore()
 
 const register = async () => {
-  try {
-    await $fetch(`${config.public.apiBase}/accounts/register/`, {
-      method: "POST",
-      body: { username: username.value, password: password.value },
-      credentials: "include", 
-    })
-    alert("Registered!")
-  } catch (e) {
-    alert("Registration failed")
-  }
+  authStore.register(username.value, password.value)
 }
 </script>

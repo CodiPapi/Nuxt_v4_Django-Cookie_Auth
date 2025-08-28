@@ -1,52 +1,88 @@
 <template>
-  <div class="p-6 max-w-sm mx-auto">
-    <h1 class="text-xl mb-4">Login</h1>
+  <div class="container">
+    <h1 class="title">Login</h1>
 
     <form @submit.prevent="login">
-      <input
-        v-model="username"
-        placeholder="Username"
-        class="border p-2 mb-2 block w-full"
-      />
+      <input v-model="username" placeholder="Username" class="input" />
       <input
         v-model="password"
         type="password"
         placeholder="Password"
-        class="border p-2 mb-2 block w-full"
+        class="input"
       />
-      <button type="submit" class="bg-blue-500 text-white p-2 rounded w-full">
-        Login
-      </button>
+      <button type="submit" class="button">Login</button>
     </form>
 
-
+    <div v-if="wrong_password" class="error">
+      Incorrect username or password. Please try again.
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 const username = ref("")
 const password = ref("")
+const wrong_password = ref(false)
 
-const config = useRuntimeConfig()
+import { useAuthStore } from "~/stores/auth"
+const authStore = useAuthStore()
 
 const login = async () => {
-  try {
-    const { data, error } = await useFetch(`${config.public.apiBase}/accounts/login/`, {
-      method: "POST",
-      body: { username: username.value, password: password.value },
-      credentials: "include", 
-    })
-    if (!error.value) {
-      navigateTo("/user")
-    } else {
-      console.log("Login error:", error.value)
-      navigateTo("/login")
-    }
-
-  } catch (e) {
-    await navigateTo("/login")
-    console.log("Login failed:",e)
+  await authStore.login(username.value, password.value)
+  if (authStore.isAuthenticated) {
+    wrong_password.value = false
+    await navigateTo("/user")
+  }
+  else {
+    console.log("Not authenticated")
+    password.value = ""
+    wrong_password.value = true
+    navigateTo("/login")
   }
 }
 
 </script>
+
+<style scoped>
+.container {
+  padding: 1.5rem;
+  max-width: 400px;
+  margin: 2rem auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.button {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #2563eb; /* blue */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #1e40af;
+}
+
+.error {
+  color: red;
+  margin-top: 0.5rem;
+}
+</style>

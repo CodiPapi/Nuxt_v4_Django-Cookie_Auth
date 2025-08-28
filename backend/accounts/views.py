@@ -5,32 +5,37 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
+from django.utils.decorators import method_decorator
 
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class LoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
         user = authenticate(request, username=username, password=password)
-
+        print(username,password,user)
         if not user:
             return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
         refresh = RefreshToken.for_user(user)
 
-        res = Response({"detail": "Login successful"})
+        res = Response({"username": user.username,
+            "detail": "Login successful"},
+            status=status.HTTP_200_OK)
         res.set_cookie(
             "access_token",
             str(refresh.access_token),
             httponly=True,
-            samesite="lax",
+            samesite="none",
             secure=True,
         )
         res.set_cookie(
             "refresh_token",
             str(refresh),
             httponly=True,
-            samesite="lax",
+            samesite="none",
             secure=True,
         )
         return res
@@ -42,6 +47,7 @@ class LogoutView(APIView):
         res = Response({"detail": "Logged out"})
         res.delete_cookie("access_token")
         res.delete_cookie("refresh_token")
+        # res.delete_cookie("csrftoken")
         return res
 
 class RegisterView(APIView):
@@ -60,6 +66,7 @@ class RegisterView(APIView):
 
         return Response({"detail": "User registered successfully"}, status=status.HTTP_201_CREATED)
 
+# @method_decorator(csrf_protect, name='dispatch') # Needed if POST/PUT/PATCH methods are used
 class UserView(APIView):
     permission_classes = [IsAuthenticated] 
     def get(self, request):

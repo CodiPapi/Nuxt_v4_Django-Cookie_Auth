@@ -1,50 +1,75 @@
 <template>
-  <div>
+  <div class="title container">
     <h1>User Profile</h1>
     <p v-if="userEmail">Your email: {{ userEmail }}</p>
     <p v-else>Loading user data...</p>
-  </div>
+
     <button
       @click="logout"
-      class="mt-4 bg-gray-500 text-white p-2 rounded w-full"
+      class="button"
     >
       Logout
-    </button>
+    </button>  
+  </div>
 </template>
 
 <script setup lang="ts">
 
 const userEmail = ref<string | null>(null);
 const runtimeConfig = useRuntimeConfig();
+const authStore = useAuthStore();
 
 onMounted(async () => {
-  try {
-    const response = await fetch(`${runtimeConfig.public.apiBase}/accounts/user/`,  {credentials: 'include',
-     });
-    if (response.ok) {
-      const data = await response.json();
-      userEmail.value = data.username;
-    } else {
-      console.error('Failed to fetch user data:', response.statusText);
-    }
-  } catch (e) {
-    console.error('Error fetching user data:', e);
-  }
+  await authStore.fetchUser();
+  userEmail.value = authStore.user?.username ?? null;
 });
 
 const logout = async () => {
-  try {
-    await useFetch(`${runtimeConfig.public.apiBase}/accounts/logout/`, {
-      method: "POST",
-      credentials: "include",
-    })
-    navigateTo("/login")
-  } catch (e) {
-    console.error('Error logging out:', e);
-  }
+  authStore.logout();
+  await navigateTo("/login");
 }
 </script>
 
 <style scoped>
+.container {
+  padding: 1.5rem;
+  max-width: 400px;
+  margin: 2rem auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
 
+.title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.button {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #2563eb; /* blue */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #1e40af;
+}
+
+.error {
+  color: red;
+  margin-top: 0.5rem;
+}
 </style>

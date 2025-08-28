@@ -5,7 +5,7 @@
     "skipLibCheck": true,
     "types": [
       "@types/node",
-      "@nuxt/schema"
+      "@nuxt/schema",
     ]
   }
 } 
