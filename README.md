@@ -61,7 +61,7 @@ npm run dev
 Runs on: http://localhost:3000/
 
 ## Authentication Flow
-- User logs in via Nuxt frontend; Django sets a secure, HttpOnly sessionid cookie and CSRF token.
+- User logs in via Nuxt frontend; Django sets a secure, CSRF token and HttpOnly sessionid cookie.
 - Nuxt includes the CSRF token in request headers
 - API requests carry cookies automatically—no token storage in JavaScript needed.
 - Pinia store handles user state management
