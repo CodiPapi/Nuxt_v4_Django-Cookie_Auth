@@ -5,11 +5,7 @@
 body {
   font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   color: #ffffff;
-  --btn-color-primary: #e5eaeb;
-  --btn-color-hover: #b1eef2;
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --bg-color: #0a4785;
-
   --ui-text: color;
 }
 
@@ -37,16 +33,3 @@ body {
   border-radius: 10px;
 }
 
-/* Custom button styles */
-.btn-gradient {
-  background: var(--gradient-primary);
-  border: none;
-  color: var(--btn-color-primary);
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn-gradient:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
-}
