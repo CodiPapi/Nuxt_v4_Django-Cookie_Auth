@@ -1,42 +1,60 @@
 <template>
-  <div class="container">
+  <UContainer class="container login-container mt-10">
     <h1 class="title">Login</h1>
+    <UForm :schema="schema" :state="formState" class="space-y-4" @submit="login">
+      <UFormField label="Email" name="email">
+        <UInput v-model="formState.email"/>
+      </UFormField>
 
-    <form @submit.prevent="login">
-      <input v-model="username" placeholder="Username" class="input" />
-      <input
-        v-model="password"
-        type="password"
-        placeholder="Password"
-        class="input"
-      />
-      <button type="submit" class="button">Login</button>
-    </form>
+      <UFormField label="Password" name="password">
+        <UInput v-model="formState.password" type="password" />
+      </UFormField>
 
-    <div v-if="wrong_password" class="error">
-      Incorrect username or password. Please try again.
-    </div>
-  </div>
+      <UButton type="submit" variant="outline">
+        Login
+      </UButton>
+    </UForm>
+  </UContainer>
 </template>
 
 <script setup lang="ts">
-const username = ref("")
-const password = ref("")
-const wrong_password = ref(false)
+import * as z from 'zod'
+import type { FormSubmitEvent } from '@nuxt/ui'
+
+const schema = z.object({
+  email: z.email('Invalid email'),
+  password: z.string().min(8, 'Must be at least 8 characters')
+})
+
+type Schema = z.output<typeof schema>
+
+const formState = reactive<Partial<Schema>>({
+  email: undefined,
+  password: undefined
+})
+const toast = useToast()
+
 
 import { useAuthStore } from "~/stores/auth"
 const authStore = useAuthStore()
+const wrong_password = ref(false)
 
-const login = async () => {
-  await authStore.login(username.value, password.value)
+async function login(event: FormSubmitEvent<Schema>) {
+  await authStore.login(event.data.email, event.data.password)
   if (authStore.isAuthenticated) {
     wrong_password.value = false
     await navigateTo("/user")
   }
   else {
     console.log("Not authenticated")
-    password.value = ""
-    wrong_password.value = true
+    formState.password = ""
+    toast.add({
+      title: 'Login failed',
+      description: 'Invalid password',
+      color: 'warning',
+      progress: false,
+      duration: 2000,
+    })
     navigateTo("/login")
   }
 }
@@ -44,45 +62,4 @@ const login = async () => {
 </script>
 
 <style scoped>
-.container {
-  padding: 1.5rem;
-  max-width: 400px;
-  margin: 2rem auto;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-.title {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-}
-
-.input {
-  display: block;
-  width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
-  border: 1px solid #aaa;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.button {
-  width: 100%;
-  padding: 0.5rem;
-  background-color: #2563eb; /* blue */
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.button:hover {
-  background-color: #1e40af;
-}
-
-.error {
-  color: red;
-  margin-top: 0.5rem;
-}
 </style>

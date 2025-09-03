@@ -20,5 +20,8 @@ export default defineNuxtConfig({
     autoImport: true
   },
 
-  modules: ['@pinia/nuxt'],
+  modules: ['@pinia/nuxt',
+    '@nuxt/ui'
+  ],
+  css: ['~/assets/css/main.css']
 })

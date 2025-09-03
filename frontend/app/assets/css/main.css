@@ -1,0 +1,52 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+
+body {
+  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  color: #ffffff;
+  --btn-color-primary: #e5eaeb;
+  --btn-color-hover: #b1eef2;
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --bg-color: #0a4785;
+
+  --ui-text: color;
+}
+
+
+.container {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--bg-color);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.login-container {
+  align-items: left;
+  border-radius: 8px;
+}
+
+.user-container {
+  align-items: center;
+  border-radius: 10px;
+  border-radius: 10px;
+}
+
+/* Custom button styles */
+.btn-gradient {
+  background: var(--gradient-primary);
+  border: none;
+  color: var(--btn-color-primary);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+}
